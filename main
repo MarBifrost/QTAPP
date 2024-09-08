@@ -1,0 +1,193 @@
+# -*- coding: utf-8 -*-
+
+from PyQt5 import QtCore, QtWidgets
+import json
+import requests
+import sys
+import os
+from PyQt5.QtWidgets import QMessageBox
+
+
+def resource_path(relative_path):
+    try:
+        base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    except AttributeError:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, relative_path)
+
+
+class Convertor:
+    def setupUi(self, mainWindow):
+        mainWindow.setObjectName("mainWindow")
+        mainWindow.resize(351, 457)
+        self.centralwidget = QtWidgets.QWidget(mainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.formLayout = QtWidgets.QFormLayout(self.centralwidget)
+        self.formLayout.setObjectName("formLayout")
+
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
+        self.label.setWordWrap(True)
+        self.label.setObjectName("label")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.label)
+
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
+        self.label_2.setWordWrap(True)
+        self.label_2.setObjectName("label_2")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.label_2)
+
+        self.comboBox_2 = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox_2.setObjectName("comboBox_2")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.comboBox_2)
+
+        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox.setObjectName("comboBox")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.comboBox)
+
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setObjectName("pushButton")
+        self.formLayout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.pushButton)
+
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.formLayout.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.pushButton_2)
+
+        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.formLayout.setWidget(8, QtWidgets.QFormLayout.FieldRole, self.pushButton_3)
+
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setObjectName("lineEdit")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit)
+
+        self.result_label = QtWidgets.QLabel(self.centralwidget)
+        self.result_label.setObjectName("result_label")
+        self.result_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.formLayout.setWidget(9, QtWidgets.QFormLayout.FieldRole, self.result_label)
+
+        mainWindow.setCentralWidget(self.centralwidget)
+        mainWindow.setWindowTitle("ვალუტის კონვერტორი")
+
+        currencies = ["USD", "EURO", "GEL", "GBP"]
+        self.comboBox.addItems(currencies)
+        self.comboBox_2.addItems(currencies)
+
+        self.pushButton.setText("კონვერტაცია")
+        self.pushButton_2.setText("განახლება")
+        self.pushButton_3.setText("გასვლა")
+
+        self.pushButton.clicked.connect(self.convert_currency)
+        self.pushButton_2.clicked.connect(self.refresh_button)
+        self.pushButton_3.clicked.connect(self.open_main_window)
+
+    def get_rate(self, from_currency, to_currency):
+        my_api_key = "8b004f30b0bd91bc04c0995b"
+        url = f"https://v6.exchangerate-api.com/v6/{my_api_key}/latest/{from_currency}"
+        response = requests.get(url)
+        data = response.json()
+        return data["conversion_rates"][to_currency]
+
+    def convert_currency(self):
+        try:
+            amount_text = self.lineEdit.text()
+            if not amount_text:
+                raise ValueError("თანხის ველი ცარიელია!")
+            amount = float(self.lineEdit.text())
+            from_currency = self.comboBox.currentText()
+            to_currency = self.comboBox_2.currentText()
+            rate = self.get_rate(from_currency, to_currency)
+            result = amount * rate
+            self.result_label.setText(
+                f"{amount} {from_currency} არის {result:.2f} {to_currency}"
+            )
+        except ValueError as ve:
+            QMessageBox.critical(self.centralwidget, "Input Error", str(ve))
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(
+                self.centralwidget, "Input Error", "თანხის ველი ცარიელია!"
+            )
+
+    def refresh_button(self):
+        self.lineEdit.clear()
+        self.comboBox.setCurrentIndex(0)
+        self.comboBox_2.setCurrentIndex(0)
+        self.result_label.setText("")
+
+    def open_main_window(self):
+        from MainWindow import MainWindow
+
+        self.main_window = MainWindow()
+        self.main_window.show()
+        self.centralwidget.window().close()
+
+
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.setupUi(self)
+
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(210, 100, 371, 21))
+        self.label.setObjectName("label")
+
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setGeometry(QtCore.QRect(310, 150, 151, 27))
+
+        self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_2.setGeometry(QtCore.QRect(310, 200, 151, 27))
+
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(340, 260, 88, 27))
+        self.pushButton.setObjectName("pushButton")
+
+        MainWindow.setCentralWidget(self.centralwidget)
+        MainWindow.setWindowTitle("ავტორიზაცია")
+        self.label.setText("შეიყვანეთ მომხმარებლის სახელი და პაროლი")
+        self.pushButton.setText("შესვლა")
+
+        self.pushButton.clicked.connect(self.check_credentials)
+
+    def check_credentials(self):
+        username = self.lineEdit.text()
+        password = self.lineEdit_2.text()
+
+        # Use resource_path to find the credentials file
+        credentials_path = resource_path("credentials.json")
+        print(f"Credentials path: {credentials_path}")  # Debugging line
+
+        try:
+            with open(credentials_path, "r") as file:
+                credentials = json.load(file)
+        except FileNotFoundError:
+            QtWidgets.QMessageBox.critical(
+                self, "File Error", "Credentials file not found!"
+            )
+            return
+
+        for user in credentials["users"]:
+            if user["username"] == username and user["password"] == password:
+                self.open_convertor()
+                return
+
+        QtWidgets.QMessageBox.warning(None, "Error", "Invalid credentials")
+
+    def open_convertor(self):
+        self.conventor_window = QtWidgets.QMainWindow()
+        self.convertor_ui = Convertor()
+        self.convertor_ui.setupUi(self.conventor_window)
+        self.conventor_window.show()
+        self.close()
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    main_window = MainWindow()
+    main_window.show()
+    sys.exit(app.exec_())
