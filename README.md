@@ -19,8 +19,9 @@ pip install -r requirements.txt
  **https://github.com/MarBifrost/QTAPP**
 შემდეგ გადადით დირექტორიაში, სადაც კლონი შეინახეთ cd /path გამოყენებით
 და გაუშვით აპლიკაცია:
-python/python3 main.py
-ლინუქსის შემთხვევაში ./main
+python/python3 mysetup.exe
+ლინუქსის შემთხვევაში ./mysetup.exe
+მიჰყევით ინსტრუქციას
 
 ## აპლიკაციის გამოყენება
 1. გაუშვით აპლიკაცია
