@@ -19,7 +19,8 @@ def resource_path(relative_path):
 class Convertor:
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
-        mainWindow.resize(351, 457)
+        mainWindow.resize(297, 383)
+        mainWindow.setFixedSize(297, 383)
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.formLayout = QtWidgets.QFormLayout(self.centralwidget)
@@ -115,8 +116,6 @@ class Convertor:
         self.result_label.setText("")
 
     def open_main_window(self):
-        from MainWindow import MainWindow
-
         self.main_window = MainWindow()
         self.main_window.show()
         self.centralwidget.window().close()
@@ -130,11 +129,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        MainWindow.setFixedSize(800, 600)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(210, 100, 371, 21))
+        self.label.setGeometry(QtCore.QRect(270, 100, 371, 21))
         self.label.setObjectName("label")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
